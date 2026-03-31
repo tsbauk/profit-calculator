@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Profit Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f5f5f0;color:#1a1a18;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:860px;margin:0 auto}
+.hdr{text-align:center;margin-bottom:2rem}
+.hdr h1{font-size:1.6rem;font-weight:600;color:#1a1a18;margin-bottom:.4rem}
+.hdr p{color:#6b6b66;font-size:.9rem;max-width:480px;margin:0 auto}
+.card{background:#fff;border-radius:14px;padding:1.5rem;margin-bottom:1rem;border:1px solid #e8e8e2}
+.card-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#a8a8a0;margin-bottom:1.25rem}
+.inputs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media(min-width:560px){.inputs-grid{grid-template-columns:repeat(4,1fr)}}
+.ig{display:flex;flex-direction:column;gap:.4rem}
+.ig label{font-size:.78rem;color:#6b6b66;font-weight:500}
+.iw{position:relative;display:flex;align-items:center}
+.ipx,.isx{position:absolute;color:#b0b0a8;font-size:.85rem;font-family:'DM Mono',monospace}
+.ipx{left:10px}.isx{right:10px}
+input[type=number]{width:100%;padding:.55rem .75rem;border:1px solid #e0e0d8;border-radius:8px;font-family:'DM Mono',monospace;font-size:.9rem;color:#1a1a18;background:#fafaf8;transition:border-color .15s;-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]:focus{outline:none;border-color:#3a7a5a;background:#fff}
+.hpx input[type=number]{padding-left:1.55rem}.hsx input[type=number]{padding-right:1.8rem}
+.sliders-grid{display:grid;grid-template-columns:1fr;gap:1.4rem}
+@media(min-width:560px){.sliders-grid{grid-template-columns:repeat(2,1fr)}}
+.sg{display:flex;flex-direction:column;gap:.45rem}
+.sh{display:flex;justify-content:space-between;align-items:flex-start}
+.sl{font-size:.85rem;font-weight:500;color:#2a2a26}
+.sd{font-size:.72rem;color:#a8a8a0;margin-top:2px}
+.sv{font-family:'DM Mono',monospace;font-size:.82rem;color:#3a7a5a;font-weight:500;min-width:3rem;text-align:right;padding-top:2px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:#eaeae4;border-radius:4px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:#3a7a5a;border-radius:50%;cursor:pointer;border:2.5px solid #fff;box-shadow:0 0 0 1.5px #3a7a5a;transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.1)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#3a7a5a;border-radius:50%;cursor:pointer;border:2.5px solid #fff;box-shadow:0 0 0 1.5px #3a7a5a}
+.master-wrap{border-top:1px solid #eaeae4;padding-top:1.25rem;margin-top:.75rem}
+.master-wrap .sl{font-weight:600;color:#1a1a18;font-size:.88rem}
+.master-wrap .sv{color:#1a1a18}
+.master-wrap input[type=range]::-webkit-slider-thumb{background:#1a1a18;box-shadow:0 0 0 1.5px #1a1a18}
+.master-wrap input[type=range]::-moz-range-thumb{background:#1a1a18;box-shadow:0 0 0 1.5px #1a1a18}
+.reset-row{display:flex;justify-content:flex-end;margin-top:.75rem}
+.reset-btn{font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;color:#a8a8a0;background:none;border:1px solid #e0e0d8;border-radius:6px;padding:.35rem .7rem;cursor:pointer;transition:all .15s}
+.reset-btn:hover{border-color:#a8a8a0;color:#3a3a36}
+.profit-box{background:#1a1a18;border-radius:10px;padding:1.4rem 1.6rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
+.pb-left .pb-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:.5rem}
+.pb-before{font-family:'DM Mono',monospace;font-size:.85rem;color:rgba(255,255,255,.3);text-decoration:line-through;margin-bottom:.15rem}
+.pb-after{font-family:'DM Mono',monospace;font-size:2.2rem;font-weight:600;color:#fff;letter-spacing:-.03em;line-height:1}
+.pb-right{text-align:right}
+.pb-change{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:#72e0a0}
+.pb-pct{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.2rem}
+.metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1rem}
+@media(min-width:560px){.metrics-grid{grid-template-columns:repeat(4,1fr)}}
+.mc{background:#f5f5f0;border-radius:8px;padding:.9rem 1rem}
+.mc-label{font-size:.7rem;color:#a8a8a0;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+.mc-before{font-family:'DM Mono',monospace;font-size:.82rem;color:#b0b0a8;text-decoration:line-through;margin-bottom:.1rem;display:none}
+.mc-after{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:500;color:#1a1a18}
+.chart-wrap{position:relative;width:100%;height:200px}
+.note{font-size:.72rem;color:#a8a8a0;text-align:center;margin-top:.75rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <h1>Business Profit Calculator</h1>
+    <p>Enter your current numbers. Use the sliders to see what marginal improvements do to your profit.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Your current numbers</div>
+    <div class="inputs-grid">
+      <div class="ig">
+        <label for="i-enq">Annual enquiries</label>
+        <div class="iw"><input type="number" id="i-enq" value="1000" min="0" step="1"></div>
+      </div>
+      <div class="ig">
+        <label for="i-conv">Conversion rate</label>
+        <div class="iw hsx"><input type="number" id="i-conv" value="25" min="0" max="100" step="0.1"><span class="isx">%</span></div>
+      </div>
+      <div class="ig">
+        <label for="i-sale">Average job value</label>
+        <div class="iw hpx"><span class="ipx">£</span><input type="number" id="i-sale" value="1200" min="0" step="1"></div>
+      </div>
+      <div class="ig">
+        <label for="i-cogs">Cost of goods (COGS)</label>
+        <div class="iw hsx"><input type="number" id="i-cogs" value="50" min="0" max="100" step="0.1"><span class="isx">%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Improvement sliders</div>
+    <div class="sliders-grid">
+      <div class="sg">
+        <div class="sh">
+          <div><div class="sl">Enquiries</div><div class="sd">More leads coming in</div></div>
+          <div class="sv" id="v-enq">+0%</div>
+        </div>
+        <input type="range" id="s-enq" min="0" max="50" step="1" value="0">
+      </div>
+      <div class="sg">
+        <div class="sh">
+          <div><div class="sl">Conversion rate</div><div class="sd">More enquiries becoming jobs</div></div>
+          <div class="sv" id="v-conv">+0%</div>
+        </div>
+        <input type="range" id="s-conv" min="0" max="50" step="1" value="0">
+      </div>
+      <div class="sg">
+        <div class="sh">
+          <div><div class="sl">Average job value</div><div class="sd">Charging more per job</div></div>
+          <div class="sv" id="v-sale">+0%</div>
+        </div>
+        <input type="range" id="s-sale" min="0" max="50" step="1" value="0">
+      </div>
+      <div class="sg">
+        <div class="sh">
+          <div><div class="sl">COGS reduction</div><div class="sd">Reducing cost of jobs</div></div>
+          <div class="sv" id="v-cogs">-0%</div>
+        </div>
+        <input type="range" id="s-cogs" min="0" max="50" step="1" value="0">
+      </div>
+    </div>
+
+    <div class="master-wrap">
+      <div class="sh" style="margin-bottom:.55rem">
+        <div>
+          <div class="sl">Master slider</div>
+          <div class="sd">Move all four metrics at once</div>
+        </div>
+        <div class="sv" id="v-master" style="color:#1a1a18">+0%</div>
+      </div>
+      <input type="range" id="s-master" min="0" max="50" step="1" value="0">
+      <div class="reset-row"><button class="reset-btn" id="btn-reset">Reset all</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Results</div>
+    <div class="profit-box">
+      <div class="pb-left">
+        <div class="pb-label">Gross profit</div>
+        <div class="pb-before" id="r-pb">£150,000</div>
+        <div class="pb-after" id="r-pa">£150,000</div>
+      </div>
+      <div class="pb-right">
+        <div class="pb-change" id="r-pc">+£0</div>
+        <div class="pb-pct" id="r-pp">No change yet</div>
+      </div>
+    </div>
+    <div class="metrics-grid">
+      <div class="mc"><div class="mc-label">Customers</div><div class="mc-before" id="r-cb">250</div><div class="mc-after" id="r-ca">250</div></div>
+      <div class="mc"><div class="mc-label">Revenue</div><div class="mc-before" id="r-rb">£300,000</div><div class="mc-after" id="r-ra">£300,000</div></div>
+      <div class="mc"><div class="mc-label">COGS amount</div><div class="mc-before" id="r-ob">£150,000</div><div class="mc-after" id="r-oa">£150,000</div></div>
+      <div class="mc"><div class="mc-label">COGS %</div><div class="mc-before" id="r-cpb">50.0%</div><div class="mc-after" id="r-cpa">50.0%</div></div>
+    </div>
+    <div class="chart-wrap"><canvas id="myChart"></canvas></div>
+    <div class="note">Results are for illustrative purposes. Actual results will vary based on your business.</div>
+  </div>
+</div>
+
+<script>
+const imp={enq:0,conv:0,sale:0,cogs:0};
+let myChart;
+
+const fm=n=>'£'+Math.round(n).toLocaleString('en-GB');
+const fn=n=>Math.round(n).toLocaleString('en-GB');
+const fp=n=>n.toFixed(1)+'%';
+
+function getBase(){
+  return{
+    enq:parseFloat(document.getElementById('i-enq').value)||0,
+    conv:parseFloat(document.getElementById('i-conv').value)||0,
+    sale:parseFloat(document.getElementById('i-sale').value)||0,
+    cogs:parseFloat(document.getElementById('i-cogs').value)||0
+  };
+}
+
+function calc(){
+  const b=getBase();
+  const bCust=b.enq*(b.conv/100);
+  const bRev=bCust*b.sale;
+  const bCogsAmt=bRev*(b.cogs/100);
+  const bProfit=bRev-bCogsAmt;
+  const nEnq=b.enq*(1+imp.enq/100);
+  const nConv=Math.min(b.conv*(1+imp.conv/100),100);
+  const nSale=b.sale*(1+imp.sale/100);
+  const nCogsPct=b.cogs*(1-imp.cogs/100);
+  const nCust=nEnq*(nConv/100);
+  const nRev=nCust*nSale;
+  const nCogsAmt=nRev*(nCogsPct/100);
+  const nProfit=nRev-nCogsAmt;
+  return{bCust,bRev,bCogsAmt,bProfit,bCogsPct:b.cogs,nCust,nRev,nCogsAmt,nProfit,nCogsPct,change:nProfit-bProfit,changePct:bProfit!==0?((nProfit-bProfit)/bProfit)*100:0};
+}
+
+function render(){
+  const r=calc();
+  const changed=r.change!==0;
+  const sign=r.change>=0?'+':'';
+
+  document.getElementById('r-pb').style.display=changed?'block':'none';
+  document.getElementById('r-pb').textContent=fm(r.bProfit);
+  document.getElementById('r-pa').textContent=fm(r.nProfit);
+  document.getElementById('r-pc').textContent=sign+fm(r.change);
+  document.getElementById('r-pc').style.color=r.change>=0?'#72e0a0':'#f87171';
+  document.getElementById('r-pp').textContent=changed?sign+r.changePct.toFixed(1)+'% improvement':'No change yet';
+
+  [['r-cb','r-ca',fn(r.bCust),fn(r.nCust)],
+   ['r-rb','r-ra',fm(r.bRev),fm(r.nRev)],
+   ['r-ob','r-oa',fm(r.bCogsAmt),fm(r.nCogsAmt)],
+   ['r-cpb','r-cpa',fp(r.bCogsPct),fp(r.nCogsPct)]].forEach(([bid,aid,bv,av])=>{
+    document.getElementById(bid).textContent=bv;
+    document.getElementById(aid).textContent=av;
+    document.getElementById(bid).style.display=changed?'block':'none';
+  });
+
+  if(myChart){
+    myChart.data.datasets[0].data=[Math.round(r.bProfit),Math.round(r.nProfit)];
+    myChart.update('none');
+  }
+}
+
+window.addEventListener('load',()=>{
+  const ctx=document.getElementById('myChart').getContext('2d');
+  myChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['Current profit','Projected profit'],
+      datasets:[{data:[150000,150000],backgroundColor:['#deded6','#3a7a5a'],borderRadius:6,borderSkipped:false}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>' £'+Math.round(c.raw).toLocaleString('en-GB')}}
+      },
+      scales:{
+        y:{beginAtZero:true,ticks:{callback:v=>'£'+(v>=1000000?Math.round(v/1000000)+'m':v>=1000?Math.round(v/1000)+'k':v),font:{family:'DM Mono',size:11},color:'#a8a8a0'},grid:{color:'#f0f0e8'},border:{display:false}},
+        x:{ticks:{font:{family:'DM Sans',size:12},color:'#6b6b66'},grid:{display:false},border:{display:false}}
+      }
+    }
+  });
+  render();
+});
+
+['enq','conv','sale','cogs'].forEach(k=>{
+  document.getElementById('s-'+k).addEventListener('input',function(){
+    imp[k]=parseInt(this.value);
+    document.getElementById('v-'+k).textContent=(k==='cogs'?'-':'+')+this.value+'%';
+    render();
+  });
+});
+
+document.getElementById('s-master').addEventListener('input',function(){
+  const v=parseInt(this.value);
+  document.getElementById('v-master').textContent='+'+v+'%';
+  ['enq','conv','sale','cogs'].forEach(k=>{
+    imp[k]=v;
+    document.getElementById('s-'+k).value=v;
+    document.getElementById('v-'+k).textContent='+'+v+'%';
+  });
+  render();
+});
+
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  ['enq','conv','sale','cogs'].forEach(k=>{
+    imp[k]=0;
+    document.getElementById('s-'+k).value=0;
+    document.getElementById('v-'+k).textContent=(k==='cogs'?'-':'+')+0+'%';
+  });
+  document.getElementById('s-master').value=0;
+  document.getElementById('v-master').textContent='+0%';
+  render();
+});
+
+['i-enq','i-conv','i-sale','i-cogs'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',render);
+});
+</script>
+</body>
+</html>
